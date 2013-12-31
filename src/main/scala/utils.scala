@@ -6,6 +6,7 @@ import duration._
 
 import android.content._
 import android.util.Log
+import scala.language.postfixOps
 
 package object utils {
 
