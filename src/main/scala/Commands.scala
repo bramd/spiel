@@ -1,8 +1,14 @@
 package info.spielproject.spiel
 
+import java.text.SimpleDateFormat
+import java.util.Date
+
 import android.content._
 import android.os._
-import android.view.accessibility._
+import android.text.format.DateFormat
+import android.view._
+import KeyEvent._
+import accessibility._
 import AccessibilityEvent._
 import AccessibilityNodeInfo._
 import android.util._
@@ -121,7 +127,7 @@ trait Commands {
       }
     }.getOrElse(setInitialFocus())
 
-  protected def continuousRead() {
+  protected def continuousRead() = {
     val oldGranularity = granularity
     val pm = SpielService.context.getSystemService(Context.POWER_SERVICE).asInstanceOf[PowerManager]
     val wl = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "spiel")
@@ -134,22 +140,29 @@ trait Commands {
         navigate(NavigationDirection.Next, wrap = false)
       }
     }
-    var stop:AccessibilityEvent => Unit = null
+    var stopAccessibilityEvent:AccessibilityEvent => Unit = null
+    var stopKeyEvent:KeyEvent => Unit = null
     def clear() {
       granularity = oldGranularity
       wl.release()
       TTS.noFlush = false
       SpeechQueueEmpty -= continue
-      AccessibilityEventReceived -= stop
+      AccessibilityEventReceived -= stopAccessibilityEvent
+      KeyEventReceived -= stopKeyEvent
     }
-    stop = { e:AccessibilityEvent =>
+    stopAccessibilityEvent = { e:AccessibilityEvent =>
       if(List(TYPE_TOUCH_EXPLORATION_GESTURE_START, TYPE_TOUCH_INTERACTION_START, TYPE_WINDOW_STATE_CHANGED).contains(e.getEventType)) {
         Log.d("spielcheck", "Stopping continuous read due to accessibilityevent trigger: "+this)
         clear()
       }
     }
+    stopKeyEvent = { e:KeyEvent =>
+      if(e.getAction == ACTION_DOWN && e.getKeyCode != KEYCODE_VOLUME_DOWN && e.getKeyCode != KEYCODE_VOLUME_UP)
+        clear()
+    }
     SpeechQueueEmpty += continue
-    AccessibilityEventReceived += stop
+    AccessibilityEventReceived += stopAccessibilityEvent
+    KeyEventReceived += stopKeyEvent
     var callAnswered:(Unit) => Unit = null
     callAnswered = { (Unit) =>
       clear()
@@ -163,11 +176,33 @@ trait Commands {
     }
     CallRinging += callRinging
     continue()
+    true
   }
 
   protected def disableSpiel() {
     TTS.speak(SpielService.context.getString(R.string.spielOff), true)
     SpielService.enabled = false
+  }
+
+  protected def speakTime() = {
+    val sdf = new SimpleDateFormat(
+      if(DateFormat.is24HourFormat(SpielService.context))
+        "H:mm"
+      else
+        "h:mm a"
+    )
+    TTS.speak(sdf.format(new Date(System.currentTimeMillis)), false)
+    true
+  }
+
+  private var _batteryLevel = 0
+
+  def batteryLevel = _batteryLevel
+
+  BatteryLevelChanged += { level:Int => _batteryLevel = level }
+
+  protected def speakBatteryPercentage(ps:Option[String] = None) {
+    TTS.speak(batteryLevel+"%" :: ps.map(_ :: Nil).getOrElse(Nil), false)
   }
 
 }
