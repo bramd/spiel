@@ -1,26 +1,15 @@
-language: scala
-jdk:
-  - oraclejdk7
-  - openjdk7
-env:
-  matrix:
-  - ANDROID_SDKS=sysimg-19            ANDROID_TARGET=android-19  ANDROID_ABI=armeabi-v7a
+language: java
+jdk: oraclejdk7
 before_install:
-    # Install base Android SDK
-    - sudo apt-get update -qq
-    - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs ia32-libs-multiarch; fi
-    - wget http://dl.google.com/android/android-sdk_r22.3-linux.tgz
-    - tar xzf android-sdk_r22.3-linux.tgz
-    - export ANDROID_HOME=$PWD/android-sdk-linux
-    - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
-
-    # Install required Android components.
-    - android update sdk -t tool,platform-tools,build-tools-19.0.1,android-18,extra-android-support,$ANDROID_SDKS --no-ui --force
-
-    # Create and start emulator
-    #- echo no | android create avd --force -n test -t $ANDROID_TARGET --abi $ANDROID_ABI
-    #- emulator -avd test -no-skin -no-audio -no-window &
-
+  # Install base Android SDK
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq libstdc++6:i386 lib32z1
+    - export COMPONENTS=build-tools-18.1.0,android-16,sysimg-16,extra-android-support
+    - curl -L https://raw.github.com/embarkmobile/android-sdk-installer/master/android-sdk-installer | bash /dev/stdin --install=$COMPONENTS
+    - source ~/.android-sdk-installer/env
+    # Create and start emulator
+    - echo no | android create avd --force -n test -t android-16 --abi armeabi-v7a
+    - emulator -avd test -no-skin -no-audio -no-window &
 before_script:
-    # Make sure the emulator has started before running tests
-    #- ./wait_for_emulator
+  - wait_for_emulator
+script: sbt apk && sbt test

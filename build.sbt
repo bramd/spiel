@@ -8,7 +8,7 @@ version := "3.0.0-SNAPSHOT"
 
 versionCode := 13
 
-scalaVersion := "2.10.2"
+scalaVersion := "2.10.4"
 
 scalacOptions ++= Seq("-deprecation", "-feature", "-language:existentials,implicitConversions,postfixOps", "-target:jvm-1.6")
 
