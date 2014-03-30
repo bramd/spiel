@@ -12,4 +12,4 @@ before_install:
     - emulator -avd test -no-skin -no-audio -no-window &
 before_script:
   - wait_for_emulator
-script: sbt apk && sbt test
+script: sbt apk -Djsse.enableSNIExtension=false && sbt test
