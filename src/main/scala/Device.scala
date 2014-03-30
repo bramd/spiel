@@ -29,11 +29,6 @@ object Device extends Commands {
       BatteryLevelChanged(level*100/scale)
   }
 
-  BatteryStatusChanged += { status:Int =>
-    if (status == BatteryManager.BATTERY_STATUS_FULL)
-      speakBatteryPercentage(batteryStatusString)
-  }
-
   PowerConnected += speakBatteryPercentage(Some(SpielService.context.getString(R.string.charging)))
 
   PowerDisconnected += speakBatteryPercentage()
