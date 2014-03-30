@@ -195,6 +195,12 @@ trait Commands {
     true
   }
 
+  private var _batteryStatus = -1
+
+  def batteryStatus = _batteryStatus
+
+  BatteryStatusChanged += { status:Int => _batteryStatus = status }
+
   private var _batteryLevel = 0
 
   def batteryLevel = _batteryLevel
@@ -204,5 +210,10 @@ trait Commands {
   protected def speakBatteryPercentage(ps:Option[String] = None) {
     TTS.speak(batteryLevel+"%" :: ps.map(_ :: Nil).getOrElse(Nil), false)
   }
+
+  protected def batteryStatusString:Option[String] = Some(batteryStatus match {
+    case BatteryManager.BATTERY_STATUS_CHARGING => SpielService.context.getString(R.string.charging)
+    case BatteryManager.BATTERY_STATUS_FULL => SpielService.context.getString(R.string.charged)
+  }).orElse(None)
 
 }

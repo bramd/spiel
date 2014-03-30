@@ -58,7 +58,7 @@ class Keys {
             }.getOrElse(true)
           else
             navigate(NavigationDirection.Next)
-        case KEYCODE_DPAD_LEFT if spielKeyDown => 
+        case KEYCODE_DPAD_LEFT if spielKeyDown =>
           if(event.isCtrlPressed)
             source.flatMap { s =>
               (s :: s.ancestors).find(_.supports_?(Action.ScrollBackward))
@@ -82,7 +82,7 @@ class Keys {
           else
             SpielService.performGlobalAction(GLOBAL_ACTION_BACK)
         case KEYCODE_B if spielKeyDown =>
-          speakBatteryPercentage()
+          speakBatteryPercentage(batteryStatusString)
           true
         case KEYCODE_T if spielKeyDown => speakTime()
         case _ =>

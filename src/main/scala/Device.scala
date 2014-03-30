@@ -23,8 +23,15 @@ object Device extends Commands {
   BatteryChanged += { i:Intent =>
     val level = i.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
     val scale = i.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+    val status = i.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+    BatteryStatusChanged(status)
     if(level >= 0 && scale > 0)
       BatteryLevelChanged(level*100/scale)
+  }
+
+  BatteryStatusChanged += { status:Int =>
+    if (status == BatteryManager.BATTERY_STATUS_FULL)
+      speakBatteryPercentage(batteryStatusString)
   }
 
   PowerConnected += speakBatteryPercentage(Some(SpielService.context.getString(R.string.charging)))

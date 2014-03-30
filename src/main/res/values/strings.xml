@@ -159,5 +159,6 @@
   <string name="page">Page</string>
 
   <string name="charging">charging</string>
+  <string name="charged">charged</string>
 
 </resources>

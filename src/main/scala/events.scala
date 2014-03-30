@@ -86,6 +86,8 @@ object ApplicationRemoved extends Event[Intent]
 
 object BatteryChanged extends Event[Intent]
 
+object BatteryStatusChanged extends Event[Int]
+
 object BatteryLevelChanged extends Event[Int]
 
 object BluetoothConnected extends Event[Intent]

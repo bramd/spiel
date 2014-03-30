@@ -144,5 +144,6 @@
   <string name="page">Pagina</string>
 
   <string name="charging">Bezig met opladen</string>
+  <string name="charged">Opgeladen</string>
 
 </resources>
