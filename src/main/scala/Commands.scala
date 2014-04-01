@@ -214,6 +214,7 @@ trait Commands {
   protected def batteryStatusString:Option[String] = Some(batteryStatus match {
     case BatteryManager.BATTERY_STATUS_CHARGING => SpielService.context.getString(R.string.charging)
     case BatteryManager.BATTERY_STATUS_FULL => SpielService.context.getString(R.string.charged)
-  }).orElse(None)
+    case _ => ""
+  })
 
 }
